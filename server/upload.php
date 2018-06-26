@@ -39,6 +39,7 @@ if (isset($_GET["data"])) {
   }
   // change state
   mysqli_query($con, "UPDATE sets SET status = 'ready' WHERE id =".$id);
+  mysqli_close($con);
 } else {
   echo '{"type" : "fail"}';
 }

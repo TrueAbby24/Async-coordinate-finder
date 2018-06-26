@@ -1,41 +1,33 @@
 $(document).ready(function(){
   var serverURL = "http://localhost:80/";
 // xmlhttpRequest objects setup
-  var uploadRequest, dataRequest;
+  var uploadRequest, dataRequest, idRequest;
   if(window.XMLHttpRequest){
     uploadRequest=new XMLHttpRequest();
     dataRequest=new XMLHttpRequest();
+    idRequest=new XMLHttpRequest();
   } else {
     uploadRequest=new ActiveXObject("Microsoft.XMLHTTP");
     dataRequest=new ActiveXObject("Microsoft.XMLHTTP");
+    idRequest=new ActiveXObject("Microsoft.XMLHTTP");
   }
 
   // handle server responses
-  uploadRequest.onreadystatechange=function(){
-    if(uploadRequest.readyState == 4 && uploadRequest.status == 200) {
-      try {
-        var json = JSON.parse(uploadRequest.responseText);
-        if (json.type == "fail") {
-          alert("Invalid data from CSV or connection failure.")
-          return;
-        }
-        $("#upload > p").html("Data added to id: "+json.id);
-      } catch (e) {
-        alert("Server error!");
-      }
-
-    }
-  }
+  $("#find").click(function() {
+    let id  = $("#options").val());
+    dataRequest.open("GET",serverURL + "data.php?id="+id, true);
+    dataRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    dataRequest.send();
+  });
 
   dataRequest.onreadystatechange=function(){
-
-    if(uploadRequest.readyState==4 && uploadRequest.status==200) {
+    if(dataRequest.readyState==4 && dataRequest.status==200) {
       document.getElementById("myDiv").innerHTML=uploadRequest.responseText;
       // save as json & extract data and display on google maps
     }
   }
 
-  //upload file
+  //upload file functions
   $("#myFile").change(function() {
     var files = this.files;
     // var ext =
@@ -92,4 +84,36 @@ $(document).ready(function(){
     }
   }
 
+  uploadRequest.onreadystatechange=function(){
+    if(uploadRequest.readyState == 4 && uploadRequest.status == 200) {
+      try {
+        var json = JSON.parse(uploadRequest.responseText);
+        if (json.type == "fail") {
+          alert("Invalid data from CSV or connection failure.")
+          return;
+        }
+        $("#upload > p").html("Data added to id: "+json.id);
+        addToOptions(json.id);
+      } catch (e) {
+        alert("Server error!");
+      }
+
+    }
+  }
+  // populate id list
+  idRequest.onreadystatechange=function(){
+    if(idRequest.readyState==4 && idRequest.status==200) {
+      var list = JSON.parse(idRequest.responseText);
+      for (var i = 0; i < list.length; i++) {
+        addToOptions(list[i]);
+      }
+    }
+  }
+  function addToOptions(id) {
+    $("#options").append("<option value=\""+id+"\">" + id+"</option>");
+  }
+
+  idRequest.open("GET",serverURL + "getids.php", true);
+  idRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  idRequest.send();
 });
