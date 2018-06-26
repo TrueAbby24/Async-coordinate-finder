@@ -11,12 +11,14 @@ $(document).ready(function(){
   // handle server responses
   uploadRequest.onreadystatechange=function(){
     if(uploadRequest.readyState==4 && uploadRequest.status==200) {
-      document.getElementById("myDiv").innerHTML=uploadRequest.responseText;
+      // document.getElementById("myDiv").innerHTML = uploadRequest.responseText;
+      console.console.log("upload response:");
+      console.log(uploadRequest.responseText);
       // save as json & extract id
     }
   }
 
-  uploadRequest.onreadystatechange=function(){
+  dataRequest.onreadystatechange=function(){
     if(uploadRequest.readyState==4 && uploadRequest.status==200) {
       document.getElementById("myDiv").innerHTML=uploadRequest.responseText;
       // save as json & extract data and display on google maps
@@ -26,45 +28,49 @@ $(document).ready(function(){
 
   //upload file
   $("#myFile").change(function() {
-    //check everything not corrupted, check CSV myFile
-    // console.log("uploaded");
-    // // Process CSV
-    // var x = $("#myFile");
-    // console.log("x: " + x);
-    // var fileReader = new FileReader();
-    // fileReader.onload = function(fileLoadedEvent) {
-    //   var txt = fileLoadedEvent.target.result;
-    //   console.log(txt);
-    // };
-    //
-    // fileReader.readAsText(x,"UTF-8");
     var files = this.files;
-    console.log(files);
-    if (window.FileReader) {
-      var reader = new FileReader();
-      reader.readAsText(files[0]);
-      // Handle errors and data
-      reader.onload = processData;
-      reader.onerror = errorHandler;
+    // var ext =
+    if(files[0].name.split(".")[1] == "csv") {
+      if (window.FileReader) {
+        var reader = new FileReader();
+        reader.readAsText(files[0]);
+        // Handle errors and data
+        reader.onload = processData;
+        reader.onerror = errorHandler;
+      } else {
+        alert("FileReader is not supported in this browser.")
+      }
     } else {
-      alert("FileReader is not supported in this browser.")
+      alert("Incorrect file type!")
     }
   });
 
 
   function processData(event) {
+    // Construct JSON from CSV
     var csv = event.target.result;
-    var allTextLines = csv.split(/\r\n|\n/);
-    var lines = [];
-    for (var i=0; i < allTextLines.length; i++) {
-        var data = allTextLines[i].split(',');
-            var tarr = [];
-            for (var j=0; j<data.length; j++) {
-                tarr.push(data[j]);
-            }
-            lines.push(tarr);
+    var txt = csv.split(/\r\n|\n/);
+    var headers = txt[0].split(", ");
+    if (headers.length == 2 && !(headers[0] === "") && !(headers[1] === "")) {
+      var result = [];
+      for (var i=1; i < txt.length; i++) {
+        var data = txt[i].split(',');
+        if(data.length != 2 || data[0] === "" || data[1] === "") {
+          alert("Invalid csv format!");
+          exit();
+        }
+        var entry = {};
+        entry[headers[0]] = data[0];
+        entry[headers[1]] = data[1].replace('"','');
+        result.push(entry);
+      }
+      console.log(JSON.stringify(result));
+      dataRequest.open("POST", "http://localhost:80/upload.php", true);
+      dataRequest.setRequestHeader("data", JSON.stringify(result));
+      dataRequest.send();
+    } else {
+      alert("Invalid headers");
     }
-  console.log(lines);
   }
 
   function errorHandler(event) {
