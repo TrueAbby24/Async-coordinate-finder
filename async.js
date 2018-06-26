@@ -1,5 +1,5 @@
 $(document).ready(function(){
-  var serverURL = "";
+  var serverURL = "http://localhost:80/";
 // xmlhttpRequest objects setup
   var uploadRequest, dataRequest;
   if(window.XMLHttpRequest){
@@ -9,23 +9,31 @@ $(document).ready(function(){
     uploadRequest=new ActiveXObject("Microsoft.XMLHTTP");
     dataRequest=new ActiveXObject("Microsoft.XMLHTTP");
   }
+
   // handle server responses
   uploadRequest.onreadystatechange=function(){
     if(uploadRequest.readyState == 4 && uploadRequest.status == 200) {
-      // document.getElementById("myDiv").innerHTML = uploadRequest.responseText;
-      console.console.log("upload response:");
-      console.log(uploadRequest.responseText);
-      // save as json & extract id
+      try {
+        var json = JSON.parse(uploadRequest.responseText);
+        if (json.type == "fail") {
+          alert("Invalid data from CSV or connection failure.")
+          return;
+        }
+        $("#upload > p").html("Data added to id: "+json.id);
+      } catch (e) {
+        alert("Server error!");
+      }
+
     }
   }
 
   dataRequest.onreadystatechange=function(){
+
     if(uploadRequest.readyState==4 && uploadRequest.status==200) {
       document.getElementById("myDiv").innerHTML=uploadRequest.responseText;
       // save as json & extract data and display on google maps
     }
   }
-
 
   //upload file
   $("#myFile").change(function() {
@@ -45,7 +53,6 @@ $(document).ready(function(){
       alert("Incorrect file type!")
     }
   });
-
 
   function processData(event) {
     // Construct JSON from CSV
@@ -69,10 +76,10 @@ $(document).ready(function(){
           result.push(entry);
         }
         if(validCsv) {
-          console.log(JSON.stringify(result));
-          dataRequest.open("POST",serverURL + "upload.php", true);
-          dataRequest.setRequestHeader("data", JSON.stringify(result));
-          dataRequest.send();
+          uploadRequest.open("GET",serverURL + "upload.php?data="+JSON.stringify(result)
+            .replace("\"","%22").replace(" ","%20"), true);
+          uploadRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+          uploadRequest.send();
         }
     } else {
         alert("Invalid headers");

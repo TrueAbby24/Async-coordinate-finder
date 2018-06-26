@@ -11,8 +11,12 @@
       <div id="upload">
         <h2>Upload file:</h2>
         <input type="file" id="myFile" multiple size="50" accept=".csv">
+        <p></p>
       </div>
       <div id="load-data">
+        <input type="submit" id="find" >
+        <?php
+        ?>
       </div>
     </div>
 
