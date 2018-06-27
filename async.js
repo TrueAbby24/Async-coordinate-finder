@@ -14,15 +14,17 @@ $(document).ready(function(){
 
   // handle server responses
   $("#find").click(function() {
-    let id  = $("#options").val());
+    let id  = $("#options").val();
     dataRequest.open("GET",serverURL + "data.php?id="+id, true);
-    dataRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    dataRequest.setRequestHeader("Content-type",
+      "application/x-www-form-urlencoded");
     dataRequest.send();
   });
 
   dataRequest.onreadystatechange=function(){
     if(dataRequest.readyState==4 && dataRequest.status==200) {
-      document.getElementById("myDiv").innerHTML=uploadRequest.responseText;
+    $("#load-data p").html(dataRequest.responseText);
+    console.log(dataRequest.responseText);
       // save as json & extract data and display on google maps
     }
   }
@@ -114,6 +116,18 @@ $(document).ready(function(){
   }
 
   idRequest.open("GET",serverURL + "getids.php", true);
-  idRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  idRequest.setRequestHeader("Content-type",
+    "application/x-www-form-urlencoded");
   idRequest.send();
+
+  // map
+  // function myMap() {
+  //     var mapOptions = {
+  //         center: new google.maps.LatLng(51.5, -0.12),
+  //         zoom: 10,
+  //         mapTypeId: google.maps.MapTypeId.HYBRID
+  //     }
+  // var map = new google.maps.Map($("#map"), mapOptions);
+  // }
+  // myMap();
 });

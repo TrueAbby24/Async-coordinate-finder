@@ -1,0 +1,10 @@
+#map{
+  background-color: green;
+  width: 200px;
+  height: 200px;
+}
+
+.user-input{
+  border: 0.5px gray solid;
+  /* padding: 2px 2px 2px 2px; */
+}
