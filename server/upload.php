@@ -17,6 +17,13 @@ if (isset($_GET["data"])) {
   mysqli_query($con, "INSERT INTO sets (status) VALUES ('pending')");
   $id = mysqli_insert_id($con); //saves new id
   echo '{"type" : "pending", "id":'.$id.'}';
+  // finishes connection with client
+  header('Connection: close');
+  header('Content-Length: '.ob_get_length());
+  ob_end_flush();
+  ob_flush();
+  flush();
+
   // insert data to locations
   for($i = 0; $i < count($data); $i++) {
     // find coordinates

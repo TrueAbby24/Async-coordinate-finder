@@ -23,19 +23,31 @@ $(document).ready(function(){
 
   dataRequest.onreadystatechange=function(){
     if(dataRequest.readyState==4 && dataRequest.status==200) {
-    $("#load-data p").html(dataRequest.responseText);
-    console.log(dataRequest.responseText);
+      let json = JSON.parse(dataRequest.responseText);
+      if (json.status === "pending") {
+        $("#load-data p").html("ID is still pending");
+      } else if (json.status == "ready") {
+        let res = "Locations below: <br>";
+        for (let i = 0; i < json.data.length; i++) {
+          let x = json.data[i];
+          res += x.lattitude + "," + x.longitude + "<br>";
+        }
+        $("#load-data p").html(res);
+      } else if (json.status == "fail") {
+        alert(json.message);
+      }
+
       // save as json & extract data and display on google maps
     }
   }
 
   //upload file functions
   $("#myFile").change(function() {
-    var files = this.files;
-    // var ext =
+    let files = this.files;
+    // let ext =
     if(files[0].name.split(".")[1] == "csv") {
       if (window.FileReader) {
-        var reader = new FileReader();
+        let reader = new FileReader();
         reader.readAsText(files[0]);
         // Handle errors and data
         reader.onload = processData;
@@ -50,21 +62,21 @@ $(document).ready(function(){
 
   function processData(event) {
     // Construct JSON from CSV
-    var csv = event.target.result;
-    var txt = csv.split(/\r\n|\n/);
-    var headers = txt[0].split(", ");
-    var validCsv = true;
+    let csv = event.target.result;
+    let txt = csv.split(/\r\n|\n/);
+    let headers = txt[0].split(", ");
+    let validCsv = true;
     if (headers.length == 2 && headers[0] == "name"
       && headers[1] == "address") {
-        var result = [];
-        for (var i=1; i < txt.length; i++) {
-          var data = txt[i].split(',"');
+        let result = [];
+        for (let i=1; i < txt.length; i++) {
+          let data = txt[i].split(',"');
           if(data.length != 2 || data[0] === "" || data[1] === "") {
             alert("Invalid csv format!\n");
             validCsv = false;
             break;
           }
-          var entry = {};
+          let entry = {};
           entry[headers[0]] = data[0];
           entry[headers[1]] = data[1].replace('"','');
           result.push(entry);
@@ -89,7 +101,7 @@ $(document).ready(function(){
   uploadRequest.onreadystatechange=function(){
     if(uploadRequest.readyState == 4 && uploadRequest.status == 200) {
       try {
-        var json = JSON.parse(uploadRequest.responseText);
+        let json = JSON.parse(uploadRequest.responseText);
         if (json.type == "fail") {
           alert("Invalid data from CSV or connection failure.")
           return;
@@ -105,8 +117,8 @@ $(document).ready(function(){
   // populate id list
   idRequest.onreadystatechange=function(){
     if(idRequest.readyState==4 && idRequest.status==200) {
-      var list = JSON.parse(idRequest.responseText);
-      for (var i = 0; i < list.length; i++) {
+      let list = JSON.parse(idRequest.responseText);
+      for (let i = 0; i < list.length; i++) {
         addToOptions(list[i]);
       }
     }
