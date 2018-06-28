@@ -21,7 +21,7 @@ if (isset($_GET['id'])) {
   while (mysqli_stmt_fetch($stmt)) {
     $i++;
   }
-  if ($i != 1) {// || $id == 17) {
+  if ($i != 1) {
     invalidData("Invalid id");
   }
   // see what type
@@ -40,8 +40,6 @@ if (isset($_GET['id'])) {
       $obj->location = new stdClass();
       $obj->location->lat = floatval($row["lattitude"]);
       $obj->location->lng = floatval($row["longitude"]);
-      // $obj->longitude = $row["longitude"];
-      // $obj->lattitude = $row["lattitude"];
       array_push($list, $obj);
     }
 
@@ -49,8 +47,8 @@ if (isset($_GET['id'])) {
     $result->id = $id;
     $result->status = $status;
     $result->data = $list;
-    echo json_encode($result);
     // send result
+    echo json_encode($result);
 
   } else {
     invalidData("Invalid status");

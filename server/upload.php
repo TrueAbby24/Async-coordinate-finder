@@ -33,7 +33,12 @@ if (isset($_GET["data"])) {
       $response = file_get_contents("http://maps.google.com/maps/api/".
       "geocode/json?sensor=false&address=$addr");
       $json = json_decode($response);
-    } while ($json->status != "OK");
+    } while ($json->status == "OVER_DAILY_LIMIT");
+    if ($json->status != "OK") {
+      // this could be due to an empty result or unknown error on Googles side
+      die();
+    }
+
     $lat = $json->results[0]->geometry->location->lat;
     $lng = $json->results[0]->geometry->location->lng;
     // insert data

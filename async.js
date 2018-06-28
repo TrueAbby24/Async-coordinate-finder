@@ -1,5 +1,6 @@
 $(document).ready(function(){
   var serverURL = "http://localhost:80/";
+
 // xmlhttpRequest objects setup
   var uploadRequest, dataRequest, idRequest;
   if(window.XMLHttpRequest){
@@ -12,7 +13,7 @@ $(document).ready(function(){
     idRequest=new ActiveXObject("Microsoft.XMLHTTP");
   }
 
-  // handle server responses
+  //get information for id
   $("#find").click(function() {
     clearMarkers();
     let id  = $("#options").val();
@@ -21,7 +22,6 @@ $(document).ready(function(){
       "application/x-www-form-urlencoded");
     dataRequest.send();
   });
-
   dataRequest.onreadystatechange=function(){
     if(dataRequest.readyState==4 && dataRequest.status==200) {
       let json = JSON.parse(dataRequest.responseText);
@@ -108,6 +108,7 @@ $(document).ready(function(){
 
     }
   }
+
   // populate id list
   idRequest.onreadystatechange=function(){
     if(idRequest.readyState==4 && idRequest.status==200) {

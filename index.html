@@ -36,23 +36,22 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script type="text/javascript">
-    var map, markers = [];//, numMarkers = 0;
+    var map, markers = [];
     function initMap() {
       map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -27.4698, lng: 153.0251},
         zoom: 12
       });
     }
+
     function clearMarkers(){
       for (let i = 0; i < markers.length; i++) {
         markers[i].setMap(null);
       }
-      // numMarkers = 0;
     }
 
     function addMarkers(json) {
       $("#load-data p").html("See locations on map:");
-      // numMarkers = json.data.length;
       for (let i = 0; i < json.data.length; i++) {
         let x = json.data[i];
         let title = x.name + " ("+x.address+")";
