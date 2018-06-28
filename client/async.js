@@ -26,11 +26,13 @@ $(document).ready(function(){
     if(dataRequest.readyState==4 && dataRequest.status==200) {
       let json = JSON.parse(dataRequest.responseText);
       if (json.status === "pending") {
-        $("#load-data p").html("ID is still pending");
+        $("#load-data span").html("PENDING");
+        $("#load-data p").html("");
       } else if (json.status == "ready") {
         addMarkers(json);
       } else if (json.status == "fail") {
-        alert(json.message);
+        $("#load-data span").html("FAILURE");
+        $("#load-data p").html(json.message);
       }
     }
   }
@@ -66,6 +68,7 @@ $(document).ready(function(){
         for (let i=1; i < txt.length; i++) {
           let data = txt[i].split(',"');
           if(data.length != 2 || data[0] === "" || data[1] === "") {
+            console.log(data);
             alert("Invalid csv format!\n");
             validCsv = false;
             break;

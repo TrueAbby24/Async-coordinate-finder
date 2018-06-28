@@ -20,6 +20,7 @@
             <select id="options">
             </select>
             <input type="submit" id="find" >
+            <h3>ID status: <span><span></h3>
             <p></p>
             <br>
           </div>
@@ -51,7 +52,8 @@
     }
 
     function addMarkers(json) {
-      $("#load-data p").html("ID is ready.<ul>");
+      $("#load-data span").html("READY");
+      $("#load-data p").html("<strong>Final data:</strong><ul>");
       for (let i = 0; i < json.data.length; i++) {
         let x = json.data[i];
         let title = x.name + " ("+x.address+")";
