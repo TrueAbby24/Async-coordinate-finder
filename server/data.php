@@ -1,21 +1,17 @@
 <?php
+include 'dbConnect.php';
+$db = new MySQLDatabase();
 
 function invalidData($message) {
   echo '{"status" : "fail", "message": "'.$message.'"}';
+  $db->disconnect();
   die();
 }
 
 if (isset($_GET['id'])) {
-  $servername = "localhost";
-  $username = "root";
-  $password = "";
-  $dbname = "coordinates";
-  // build connection
-  $con = mysqli_connect($servername, $username, $password, $dbname);
-  if (!$con) {
+  if (!$con = $db->connect()) {
     invalidData("Connection failed: ".myslqi_connect_error());
   }
-  mysqli_select_db($con, $dbname);
   // check if id is in database
   $stmt = mysqli_prepare($con, "SELECT * FROM sets WHERE id = ?");
   mysqli_stmt_bind_param($stmt,'i', $_GET['id']);
@@ -41,8 +37,11 @@ if (isset($_GET['id'])) {
       $obj = new stdClass();
       $obj->name = $row["name"];
       $obj->address = $row["address"];
-      $obj->longitude = $row["longitude"];
-      $obj->lattitude = $row["lattitude"];
+      $obj->location = new stdClass();
+      $obj->location->lat = floatval($row["lattitude"]);
+      $obj->location->lng = floatval($row["longitude"]);
+      // $obj->longitude = $row["longitude"];
+      // $obj->lattitude = $row["lattitude"];
       array_push($list, $obj);
     }
 
@@ -57,7 +56,7 @@ if (isset($_GET['id'])) {
     invalidData("Invalid status");
   }
   mysqli_stmt_close($stmt);
-
+  $db->disconnect();
 } else {
   invalidData("No id sent");
 }

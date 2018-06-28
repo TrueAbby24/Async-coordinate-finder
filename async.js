@@ -14,6 +14,7 @@ $(document).ready(function(){
 
   // handle server responses
   $("#find").click(function() {
+    clearMarkers();
     let id  = $("#options").val();
     dataRequest.open("GET",serverURL + "data.php?id="+id, true);
     dataRequest.setRequestHeader("Content-type",
@@ -27,17 +28,10 @@ $(document).ready(function(){
       if (json.status === "pending") {
         $("#load-data p").html("ID is still pending");
       } else if (json.status == "ready") {
-        let res = "Locations below: <br>";
-        for (let i = 0; i < json.data.length; i++) {
-          let x = json.data[i];
-          res += x.lattitude + "," + x.longitude + "<br>";
-        }
-        $("#load-data p").html(res);
+        addMarkers(json);
       } else if (json.status == "fail") {
         alert(json.message);
       }
-
-      // save as json & extract data and display on google maps
     }
   }
 
@@ -132,14 +126,6 @@ $(document).ready(function(){
     "application/x-www-form-urlencoded");
   idRequest.send();
 
-  // map
-  // function myMap() {
-  //     var mapOptions = {
-  //         center: new google.maps.LatLng(51.5, -0.12),
-  //         zoom: 10,
-  //         mapTypeId: google.maps.MapTypeId.HYBRID
-  //     }
-  // var map = new google.maps.Map($("#map"), mapOptions);
-  // }
-  // myMap();
+
+
 });
