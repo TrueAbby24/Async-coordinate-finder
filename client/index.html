@@ -51,10 +51,11 @@
     }
 
     function addMarkers(json) {
-      $("#load-data p").html("See locations on map:");
+      $("#load-data p").html("ID is ready.<ul>");
       for (let i = 0; i < json.data.length; i++) {
         let x = json.data[i];
         let title = x.name + " ("+x.address+")";
+      $("#load-data p").append("<li>"+x.name + " : (" + x.location.lat + ","+x.location.lng+")</li>");
         window.setTimeout(function() {
           markers.push(new google.maps.Marker({
             position: x.location,
@@ -64,6 +65,7 @@
           }));
         }, i*200);
       }
+      $("#load-data p").append("</ul>")
     }
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAyqVlSlHgzw7VQSXE_HwoIcqkWSTzOLpg&callback=initMap"async defer>
